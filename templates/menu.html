@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Menu · {{ shop.name }}{% endblock %}
+
+{% block content %}
+<header class="menu-hero" style="--wallpaper: url('{{ url_for('static', filename='images/cafe-wallpaper.jpg') }}')">
+  <div class="container menu-hero-inner">
+    <span class="menu-eyebrow">Cuppa Brew Cafe</span>
+    <h1>Our Menu</h1>
+    <div class="menu-divider" aria-hidden="true"><span></span>☕<span></span></div>
+    <p class="menu-tagline">Handcrafted drinks &amp; comfort food, made fresh every day</p>
+  </div>
+</header>
+
+<section class="menu-page">
+  <div class="container">
+
+    <nav class="cat-carousel" aria-label="Menu categories">
+      <button class="car-btn car-prev" type="button" aria-label="Scroll categories left">‹</button>
+      <div class="car-track" id="catTrack">
+        {% for cat in menu %}
+        {% if cat.photo %}
+        <a class="cat-card cat-photo" href="#{{ cat.id }}" style="background-image: url('{{ url_for('static', filename=cat.photo) }}'){% if cat.photo_pos %}; background-position: {{ cat.photo_pos }}{% endif %}">
+          <span class="cat-group cat-group-{{ cat.group|lower }}">{{ cat.group }}</span>
+          <strong>{{ cat.title }}</strong>
+          <span class="cat-count">{{ cat['items']|length }} items</span>
+        </a>
+        {% else %}
+        <a class="cat-card" href="#{{ cat.id }}">
+          <span class="cat-group cat-group-{{ cat.group|lower }}">{{ cat.group }}</span>
+          <span class="cat-icon" aria-hidden="true">{{ cat.icon }}</span>
+          <strong>{{ cat.title }}</strong>
+          <span class="cat-count">{{ cat['items']|length }} items</span>
+        </a>
+        {% endif %}
+        {% endfor %}
+      </div>
+      <button class="car-btn car-next" type="button" aria-label="Scroll categories right">›</button>
+    </nav>
+
+    <div class="menu-grid">
+      {% for cat in menu %}
+      <section class="menu-cat" id="{{ cat.id }}">
+        <div class="menu-cat-head">
+          <h2 class="pill-title">{{ cat.title }}</h2>
+          {% if cat.subtitle %}<span class="subtitle">{{ cat.subtitle }}</span>{% endif %}
+        </div>
+        <table class="menu-table">
+          {% if cat.sizes|length > 1 or cat.sizes[0] %}
+          <thead>
+            <tr><th></th>{% for s in cat.sizes %}<th>{{ s }}</th>{% endfor %}</tr>
+          </thead>
+          {% endif %}
+          <tbody>
+            {% for it in cat['items'] %}
+            <tr>
+              <td class="item">
+                <span class="item-name">{{ it.name }}</span>
+                {% if it.tag %}<span class="tag tag-{{ it.tag }}">{{ tags[it.tag] }}</span>{% endif %}
+                {% if it.desc %}<span class="item-desc">{{ it.desc }}</span>{% endif %}
+              </td>
+              {% for p in it.prices %}
+              <td class="price">{{ p|peso if p else "–" }}</td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if cat.note %}<p class="cat-note">{{ cat.note }}</p>{% endif %}
+      </section>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<script>
+  // Category carousel: arrow buttons, drag/swipe, and hiding arrows at the ends.
+  (function () {
+    const wrap = document.querySelector(".cat-carousel");
+    const track = document.getElementById("catTrack");
+    const prev = wrap.querySelector(".car-prev");
+    const next = wrap.querySelector(".car-next");
+
+    const step = () => Math.max(track.clientWidth * 0.8, 200);
+    prev.addEventListener("click", () => track.scrollBy({ left: -step(), behavior: "smooth" }));
+    next.addEventListener("click", () => track.scrollBy({ left: step(), behavior: "smooth" }));
+
+    function update() {
+      const max = track.scrollWidth - track.clientWidth - 8;
+      wrap.classList.toggle("at-start", track.scrollLeft <= 8);
+      wrap.classList.toggle("at-end", track.scrollLeft >= max);
+    }
+    track.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    update();
+
+    // Drag to scroll with a mouse (touch already swipes natively)
+    let down = false, startX = 0, startScroll = 0, moved = false;
+    track.addEventListener("pointerdown", (e) => {
+      if (e.pointerType !== "mouse") return;
+      down = true; moved = false; startX = e.clientX; startScroll = track.scrollLeft;
+    });
+    window.addEventListener("pointermove", (e) => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 5 && !moved) { moved = true; track.classList.add("dragging"); }
+      if (moved) track.scrollLeft = startScroll - dx;
+    });
+    window.addEventListener("pointerup", () => {
+      if (!down) return;
+      down = false; track.classList.remove("dragging");
+    });
+    // A drag shouldn't count as clicking a card
+    track.addEventListener("click", (e) => { if (moved) { e.preventDefault(); moved = false; } }, true);
+    track.addEventListener("dragstart", (e) => e.preventDefault());
+  })();
+</script>
+{% endblock %}

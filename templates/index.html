@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-logo">
+      <img src="{{ url_for('static', filename='images/logo-white.png') }}" alt="Cuppa Brew: your neighborhood cafe">
+    </div>
+    <div class="hero-text">
+      <h1>Your neighborhood cafe in Butuan City.</h1>
+      <p class="lead">{{ shop.tagline }}</p>
+      <div class="rating">
+        <span class="stars">★★★★★</span>
+        <strong>{{ shop.rating }}</strong>
+        <span>· {{ shop.review_count }} Google reviews</span>
+      </div>
+      <div class="buttons">
+        <a class="btn btn-cream" href="{{ url_for('menu') }}">See the menu</a>
+        <a class="btn btn-outline" href="{{ shop.map_url }}" target="_blank" rel="noopener">Get directions</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container section">
+  <h2 class="pill-title">Customer favorites</h2>
+  <div class="cards">
+    {% for f in favorites %}
+    {% if f.photo %}
+    <article class="card card-photo" style="background-image: url('{{ url_for('static', filename=f.photo) }}')">
+      <div class="card-body">
+        <h3>{{ f.name }}</h3>
+        <p>{{ f.desc }}</p>
+        <span class="card-price">{{ f.price }}</span>
+      </div>
+    </article>
+    {% else %}
+    <article class="card">
+      <div class="card-icon">{{ f.icon }}</div>
+      <h3>{{ f.name }}</h3>
+      <p>{{ f.desc }}</p>
+      <span class="card-price">{{ f.price }}</span>
+    </article>
+    {% endif %}
+    {% endfor %}
+  </div>
+  <p class="center"><a class="link" href="{{ url_for('menu') }}">View the full menu →</a></p>
+</section>
+
+<section class="band">
+  <div class="container strip">
+    <div><strong>Coffee &amp; Cloud Series</strong><span>Lattes topped with fluffy cold foam</span></div>
+    <div><strong>Matcha Picks</strong><span>Ceremonial and oat milk matcha</span></div>
+    <div><strong>Croffles</strong><span>Sweet and savory, made to order</span></div>
+    <div><strong>Rice Meals</strong><span>Hearty plates with rice &amp; side dish</span></div>
+  </div>
+</section>
+
+<section class="container section about">
+  <div>
+    <h2 class="pill-title">Come hang out</h2>
+    <p>Cuppa Brew is a cozy neighborhood cafe in Rosewood Plains, Villa Kananga. Grab an iced
+       Spanish latte, share a fry board with friends, or settle in with a croffle and a matcha.
+       Look for our glowing sign at night!</p>
+    <div class="socials-inline">
+      <a class="btn btn-small" href="{{ shop.facebook }}" target="_blank" rel="noopener">Follow on Facebook</a>
+      <a class="btn btn-small btn-ghost" href="{{ shop.instagram }}" target="_blank" rel="noopener">{{ shop.instagram_handle }}</a>
+    </div>
+  </div>
+  <div class="hours">
+    <h3>Hours</h3>
+    <ul>
+      {% for day, time in shop.hours %}
+      <li><span>{{ day }}</span><span>{{ time }}</span></li>
+      {% endfor %}
+    </ul>
+    <p class="note">{{ shop.hours_note }}</p>
+  </div>
+</section>
+{% endblock %}

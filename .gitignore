@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Local tooling / editor
+.claude/
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Secrets
+.env
+
+# Download bundle (the repo already has every file)
+cuppa-brew-cafe.zip

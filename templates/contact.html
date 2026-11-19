@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Visit · {{ shop.name }}{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="container">
+    <h1>Visit Us</h1>
+    <p>We'd love to brew you a cuppa.</p>
+  </div>
+</section>
+
+<section class="container section about">
+  <div>
+    <h2 class="pill-title">Find us</h2>
+    <p>{{ shop.address }}</p>
+    <a class="btn btn-small" href="{{ shop.map_url }}" target="_blank" rel="noopener">Open in Google Maps</a>
+    <div class="map">
+      <iframe src="{{ shop.map_embed }}" title="Map to {{ shop.name }}" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </div>
+
+  <div>
+    <div class="hours">
+      <h3>Hours</h3>
+      <ul>
+        {% for day, time in shop.hours %}
+        <li><span>{{ day }}</span><span>{{ time }}</span></li>
+        {% endfor %}
+      </ul>
+      <p class="note">{{ shop.hours_note }}</p>
+    </div>
+
+    <h2 class="pill-title">Send us a message</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <p class="flash {{ category }}">{{ message }}</p>
+      {% endfor %}
+    {% endwith %}
+    <form method="post" class="contact-form">
+      <label>Name <input type="text" name="name" required></label>
+      <label>Email <input type="email" name="email"></label>
+      <label>Message <textarea name="message" rows="4" required></textarea></label>
+      <button class="btn" type="submit">Send</button>
+    </form>
+    <p class="note">Or message us on <a class="link" href="{{ shop.facebook }}" target="_blank" rel="noopener">Facebook</a>
+       or <a class="link" href="{{ shop.instagram }}" target="_blank" rel="noopener">Instagram</a>.</p>
+  </div>
+</section>
+{% endblock %}
